@@ -32,12 +32,23 @@ const userPost = async (req, res) => {
     });
 }
 
-const userPut = (req, res) => {
+const userPut = async(req, res) => {
 
-    const id = req.params.id;
+    const { id } = req.params;
+    const { password, google, email, ...remaining } = req.body;
+
+    // TODO validar contra base de datos
+    if ( password ) {
+        // Encriptar la contraseña
+        const salt = bcryptjs.genSaltSync();
+        remaining.password = bcryptjs.hashSync( password.toString(), salt );
+    }
+
+    const user = await User.findByIdAndUpdate(id, remaining);
 
     res.json({
-        msg: 'put API - Controller'
+        msg: 'put API - Controller',
+        user
     });
 }
 
